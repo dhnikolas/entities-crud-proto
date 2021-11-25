@@ -1,0 +1,90 @@
+syntax = "proto3";
+option go_package="./;entities_crud";
+package entities_crud;
+
+import "googleapis/google/api/field_behavior.proto";
+import "validate/validate.proto";
+
+service EntitiesCrud {
+  rpc ListByFilter (eventsFilter) returns (eventsResponse) {}
+  rpc Info(constructionsRequest) returns (infoResponse) {}
+  rpc Meta(metaRequest) returns (metaResponse) {}
+}
+
+message eventsFilter {
+  int32 limit  = 1;
+  int32 offset = 2;
+  string dateStart = 3;
+  string dateEnd = 4;
+  repeated filterParam params = 5;
+}
+
+message eventsResponse {
+  int32 count = 1;
+  bytes items = 2;
+}
+
+message filterParam {
+  string name = 1;
+  repeated string value = 2;
+}
+
+
+
+message countsResponse {
+  repeated counts counts = 1;
+}
+
+message counts {
+  string name = 1;
+  string img = 2;
+  int32 count = 3;
+}
+
+message metaRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {min_len: 1}
+  ];
+  string email = 2[
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string.email = true
+  ];
+  string phone = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      pattern:   "^\\+?7(9\\d{9})$",
+      max_bytes: 256,
+    }
+  ];
+}
+
+
+
+message constructionsRequest {
+  repeated int32 constructionsIds = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).repeated.min_items = 1
+  ];
+}
+message infoResponse {
+  repeated item items = 1;
+}
+
+message item {
+  string name = 1;
+  string description = 2;
+  string startingDate = 3;
+}
+
+
+
+message metaResponse {
+  repeated meta meta = 1;
+}
+
+message meta {
+  string type = 1;
+  int32  count = 2;
+}
+
